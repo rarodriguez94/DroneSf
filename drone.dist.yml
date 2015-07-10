@@ -1,0 +1,24 @@
+sudo apt-get install acl
+sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/cli/php.ini
+sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/apache2/php.ini
+sudo sh -c 'echo "xdebug.max_nesting_level = 1000" >> /etc/php5/cli/php.ini'
+sudo sh -c 'echo "xdebug.max_nesting_level = 1000" >> /etc/php5/apache2/php.ini'
+sudo start xvfb
+wget http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar --quiet
+java -jar selenium-server-standalone-2.35.0.jar &
+wget http://getcomposer.org/composer.phar && chmod +x composer.phar && sudo mv composer.phar /usr/local/bin/composer
+rm -rf app/cache/*
+rm -rf app/logs/*
+HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
+sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
+cp app/config/parameters.yml.dist app/config/parameters.yml
+cat app/config/parameters.yml
+composer install --prefer-source --no-interaction --verbose --no-progress --no-scripts
+php ./vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
+php app/console cache:clear -e=test
+php app/console assets:install -e=test
+php app/console assetic:dump -e=test
+
+phpunit -c app
+bin/behat --suite users
