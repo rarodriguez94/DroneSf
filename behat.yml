@@ -16,7 +16,7 @@ default:
               tags: "@users"
     extensions:
       Behat\MinkExtension:
-          base_url: http://127.0.0.1:8000/app_test.php # enter your base url here
+          base_url: http://127.0.0.1/app_test.php # enter your base url here
           browser_name: chrome
           sessions:
               default:
@@ -28,7 +28,7 @@ default:
 javascript:
     extensions:
         Behat\MinkExtension:
-            base_url: http://127.0.0.1:8000/app_test.php # enter your base url here
+            base_url: http://127.0.0.1/app_test.php # enter your base url here
             sessions:
                 javascript:
                     selenium2: ~
