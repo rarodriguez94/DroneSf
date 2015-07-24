@@ -9,7 +9,7 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
-DROP DATABASE `drone_test`;
+DROP DATABASE IF EXISTS `drone_test`;
 CREATE DATABASE `drone_test`;
 USE `drone_test`;
 
