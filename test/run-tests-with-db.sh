@@ -5,7 +5,7 @@
 
 if [ ${MYSQL_PASSWORD} ]; then
     echo "executing drone drone_test"
-    mysql -u root -e 'CREATE DATABASE blanchard_vault_test;'
+    mysql -u root -e 'CREATE DATABASE drone_test;'
     mysql -u root -D drone_test < ./test/sql/db-structure-test.sql
     mysql -u root -D drone_test < ./test/sql/db-init-test.sql
 else
