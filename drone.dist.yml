@@ -14,6 +14,11 @@ sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
 sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache app/logs
 cp app/config/parameters.yml.dist app/config/parameters.yml
 cat app/config/parameters.yml
+touch build/iffalse.txt
+echo -e "if (false) {" >> build/iffalse.txt
+sed -i '/$env = $this->container->get( 'kernel' )->getEnvironment();/r build/iffalse.txt' $(pwd)/src/AppBundle/Controller/DefaultController.php
+sed -i 's/if ($env == 'test') {/\/\/if ($env == 'test') {/g' $(pwd)/src/AppBundle/Controller/DefaultController.php
+
 composer install --prefer-source --no-interaction --verbose --no-progress --no-scripts
 php ./vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
 php app/console cache:clear -e=test
