@@ -15,10 +15,6 @@ use Symfony\Component\Debug\Debug;
 
 
 $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
-
-$loader = new \Symfony\Component\ClassLoader\ApcClassLoader('sf2', $loader);
-$loader->register(true);
-
 Debug::enable();
 
 require_once __DIR__.'/../app/AppKernel.php';
