@@ -17,6 +17,7 @@ php app/console cache:warmup --env=test
 phpunit -c app
 if [ ${BUILTIN_WEBSERVER} ]; then
     php app/console server:run & #built-in server at 127.0.0.1:8000
+    sleep 10
 fi
-sleep 10
+
 php bin/behat
