@@ -4,7 +4,7 @@
 #php app/console doctrine:database:create  --env=test
 
 if [ ${MYSQL_PASSWORD} ]; then
-
+    echo "executing drone drone_test"
     mysql -u root -D drone_test < ./test/sql/db-structure-test.sql
     mysql -u root -D drone_test < ./test/sql/db-init-test.sql
 else
