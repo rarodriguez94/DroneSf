@@ -47,7 +47,6 @@ class WebContext extends DefaultContext implements SnippetAcceptingContext
     public function iAmOnTheStoreHomepage()
     {
         $this->getSession()->visit($this->generateUrl('app_homepage'));
-        echo $this->getSession()->getPage()->getContent();
     }
     /**
      * @Given /^I am on my account homepage$/
