@@ -8,6 +8,8 @@ namespace AppBundle\Behat;
 
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Hook\Scope\AfterStepScope;
+use Behat\Mink\Driver\Selenium2Driver;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -21,14 +23,22 @@ class DefaultContext extends RawMinkContext implements Context, KernelAwareConte
     protected $applicationName = 'dronesf';
 
     /**
+     * @var string
+     */
+    protected $screenShotPath = 'build/behat/screenshot';
+
+    /**
      * @var KernelInterface
      */
     protected $kernel;
-    public function __construct($applicationName = null)
+    public function __construct($applicationName = null, $screenShotPath = null)
     {
-
         if (null !== $applicationName) {
             $this->applicationName = $applicationName;
+        }
+
+        if (null != $screenShotPath) {
+            $this->screenShotPath = $screenShotPath;
         }
     }
 
@@ -101,6 +111,37 @@ class DefaultContext extends RawMinkContext implements Context, KernelAwareConte
         $route = str_replace(array_keys($this->actions), array_values($this->actions), $route);
         $route = str_replace(' ', '_', $route);
         return $this->generateUrl($route, $parameters);
+    }
+
+    /**
+     * Take screen-shot when step fails. Works only with Selenium2Driver.
+     *
+     * @AfterStep
+     * @param AfterStepScope $scope
+     */
+    public function takeScreenshotAfterFailedStep(AfterStepScope $scope)
+    {
+        if (99 === $scope->getTestResult()->getResultCode()) {
+            $driver = $this->getSession()->getDriver();
+
+            if (! $driver instanceof Selenium2Driver) {
+                return;
+            }
+
+            if (! is_dir($this->screenShotPath)) {
+                mkdir($this->screenShotPath, 0777, true);
+            }
+
+            $filename = sprintf(
+                '%s_%s_%s.%s',
+                $this->getMinkParameter('browser_name'),
+                date('Ymd') . '-' . date('His'),
+                uniqid('', true),
+                'png'
+            );
+
+            $this->saveScreenshot($filename, $this->screenShotPath);
+        }
     }
 
 }

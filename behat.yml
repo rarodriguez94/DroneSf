@@ -7,6 +7,7 @@ default:
 
     suites:
       users:
+          mink_session: selenium2 #~
           contexts:
               - Behat\MinkExtension\Context\MinkContext
               - AppBundle\Behat\HookContext
@@ -15,19 +16,23 @@ default:
               tags: "@users"
     extensions:
       Behat\MinkExtension:
+          base_url: http://127.0.0.1:8000/app_test.php # enter your base url here
+          browser_name: chrome
           sessions:
               default:
                   symfony2: ~
+              selenium2:
+                  selenium2: ~
       Behat\Symfony2Extension: ~
 
 javascript:
     extensions:
         Behat\MinkExtension:
-            base_url: # enter your base url here
+            base_url: http://127.0.0.1:8000/app_test.php # enter your base url here
             sessions:
                 javascript:
                     selenium2: ~
-            browser_name: firefox
+            browser_name: chrome
             show_auto:    false
 
     gherkin:

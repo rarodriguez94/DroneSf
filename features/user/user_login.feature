@@ -4,7 +4,7 @@ Feature: visit the store
   As a visitor
   I need to be able to see some content
 
-
+  @javascript
   Scenario: Visit page
     Given I am on the store homepage
     Then I should see "homepage"
