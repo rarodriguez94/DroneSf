@@ -1,11 +1,47 @@
-sudo apt-get install acl
-sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/cli/php.ini
-sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/apache2/php.ini
+sudo apt-get install -y --force-yes apache2 links
+sudo apt-get install php5-gmp
+#Ruby install
+sudo apt-get -y install build-essential zlib1g-dev libssl-dev libreadline6-dev libyaml-dev
+sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+curl -sSL https://get.rvm.io | sudo bash -s stable --ruby
+gem install bundler
+bundle install --binstubs --path=vendor/
+#Node install
+sudo apt-get install python-software-properties
+sudo apt-add-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install nodejs
+
+sudo npm install uglify-js -g
+sudo npm install uglifycss -g
+
+which uglifyjs
+which uglifycss
+
+sudo sed -i -e "s,/var/www,$(pwd)/web,g" /etc/apache2/sites-available/000-default.conf
+mkdir p build
+touch build/apache2.conf
+
+echo -e "<Directory $(pwd)/web>" >> build/apache2.conf
+echo -e "Options Indexes FollowSymLinks" >> build/apache2.conf 
+echo -e "AllowOverride All" >> build/apache2.conf 
+echo -e "Allow from all" >> build/apache2.conf 
+echo -e "Require all granted" >> build/apache2.conf 
+echo -e "</Directory>" >> build/apache2.conf
+
+sudo sed -i '/serve-cgi-bin.conf/r build/apache2.conf' /etc/apache2/sites-available/000-default.conf
+sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/cli/php.ini 
+sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/apache2/php.ini 
 sudo sh -c 'echo "xdebug.max_nesting_level = 1000" >> /etc/php5/cli/php.ini'
 sudo sh -c 'echo "xdebug.max_nesting_level = 1000" >> /etc/php5/apache2/php.ini'
+sudo sh -c 'echo "extension=php_gmp.so" >> /etc/php5/cli/php.ini'
+sudo sh -c 'echo "extension=php_gmp.so" >> /etc/php5/apache2/php.ini'
+
+sudo apachectl restart
+sleep 5
 sudo start xvfb
 wget http://selenium.googlecode.com/files/selenium-server-standalone-2.35.0.jar --quiet
-java -jar selenium-server-standalone-2.35.0.jar &
+java -jar selenium-server-standalone-2.35.0.jar -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver &
 wget http://getcomposer.org/composer.phar && chmod +x composer.phar && sudo mv composer.phar /usr/local/bin/composer
 rm -rf app/cache/*
 rm -rf app/logs/*
@@ -17,14 +53,18 @@ cp app/config/parameters.yml.dist app/config/parameters.yml
 #read only mode
 touch build/iffalse.txt
 echo -e "if (false) {" >> build/iffalse.txt
+
 sed -i '/\$env = \$this->container->get( '\''kernel'\'' )->getEnvironment();/r build/iffalse.txt' $(pwd)/src/AppBundle/Controller/DefaultController.php
+
 sed -i 's/if (\$env == '\''test'\'') {/ \/\/if (\$env == '\''test'\'') {/g' $(pwd)/src/AppBundle/Controller/DefaultController.php
 
+cat $(pwd)/src/AppBundle/Controller/DefaultController.php
 composer install --prefer-source --no-interaction --verbose --no-progress --no-scripts
 php ./vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
 php app/console cache:clear -e=test
 php app/console assets:install -e=test
 php app/console assetic:dump -e=test
-
-phpunit -c app
-bin/behat --suite users
+sh test/run-tests-with-db.sh
+#curl -v http://127.0.0.1/app_test.php/index
+#phpunit -c app
+#bin/behat --suite users
