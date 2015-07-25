@@ -22,12 +22,15 @@ sudo sed -i -e "s,/var/www,$(pwd)/web,g" /etc/apache2/sites-available/000-defaul
 mkdir p build
 touch build/apache2.conf
 
+echo -e "ServerName dronesf.lo" >> build/apache2.conf
 echo -e "<Directory $(pwd)/web>" >> build/apache2.conf
 echo -e "Options Indexes FollowSymLinks" >> build/apache2.conf 
 echo -e "AllowOverride All" >> build/apache2.conf 
 echo -e "Allow from all" >> build/apache2.conf 
 echo -e "Require all granted" >> build/apache2.conf 
 echo -e "</Directory>" >> build/apache2.conf
+
+sudo sh -c 'echo 127.0.0.1                dronesf.lo' >> /etc/hosts
 
 sudo sed -i '/serve-cgi-bin.conf/r build/apache2.conf' /etc/apache2/sites-available/000-default.conf
 sudo sed -i 's/;date.timezone =/date.timezone = "America\/New_York"/g' /etc/php5/cli/php.ini 
