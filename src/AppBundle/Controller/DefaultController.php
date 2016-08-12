@@ -12,12 +12,6 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $env = $this->container->get( 'kernel' )->getEnvironment();
-
-        if ($env == 'test') {
-            throw $this->createNotFoundException("Loading Issues");
-        }
-
         return $this->render('default/index.html.twig');
     }
 }
