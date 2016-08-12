@@ -8,7 +8,11 @@ class DefaultControllerTest extends WebTestCase
 {
     public function testIndex()
     {
-        $client = static::createClient();
+        $server = (isset($_SERVER['CI'])? 'localhost:8000': 'dronesf.lo:80');
+
+        $client = static::createClient([], [
+            'HTTP_HOST' => $server,
+        ]);
 
         $crawler = $client->request('GET', '/index');
 
